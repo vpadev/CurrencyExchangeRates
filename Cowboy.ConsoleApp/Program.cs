@@ -32,5 +32,5 @@ if (operationType == "get")
 }
 else
 {
-    //save
+    //save currency exchange rates
 }
