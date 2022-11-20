@@ -11,7 +11,6 @@ namespace Cowboy.APIService.Contracts
     {
         Task<CurrencyExchangeRateModel?> GetCurrencyExchangeRate(string sourceCurrencyCode, string targetCurrencyCode, long amount, DateTime? date);
         CurrencyExchangeRateOnPeriodModel? GetCurrencyExchangeRateByPeriod(string sourceCurrencyCode, DateTime fromDate, DateTime toDate);
-        //CurrencyExchangeRateOnPeriodModel? SaveCurrencyExchangeRates(string sourceCurrencyCode, string targetCurrencyCode, long amount, DateTime? date);
-        //Task<List<CurrencyExchangeRate>> GetCurrencyExchangeRatesByPeriod(DateTime fromDate, DateTime toDate);
+        Task<bool> SaveCurrencyExchangeRate(string sourceCurrencyCode, string targetCurrencyCode);
     }
 }

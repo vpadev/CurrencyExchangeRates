@@ -65,11 +65,35 @@ namespace Cowboy.APIService.DataAccess
                     StartDate = fromDate,
                     EndDate = toDate,
                     ExchangeRates = x.ToList().GroupBy(g => new { g.RecordedOn })
-                                              .ToDictionary(v => v.Key.RecordedOn, 
+                                              .ToDictionary(v => v.Key.RecordedOn,
                                                             v => v.ToDictionary(d => d.TargetCurrencyCode, d => d.TargetCurrencyExchangeRate))
                 }).FirstOrDefault();
 
             return result;
+        }
+
+        public async Task<bool> SaveCurrencyExchangeRate(string sourceCurrencyCode, string targetCurrencyCode)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            var currencyExchangeRate = await GetCurrencyExchangeRate(sourceCurrencyCode, targetCurrencyCode, 1, null);
+
+            var keys = currencyExchangeRate.ExchangeRates.Keys;
+            foreach (var key in keys)
+            {
+                var targetCurrExRate = currencyExchangeRate.ExchangeRates[key];
+
+                var sql = $"INSERT INTO dbo.CurrencyExchangeRates(SourceCurrencyId, TargetCurrencyId, TargetCurrencyExchangeRate, RecordedOn) " +
+                        $"SELECT SC.Id, TC.Id, {targetCurrExRate}, '{DateTime.UtcNow.ToString("yyyy-MM-dd")}' " +
+                        $"FROM Currency SC,Currency TC " +
+                        $"WHERE SC.Code = '{sourceCurrencyCode}' AND TC.Code = '{key}' \n";
+
+                sb.AppendLine("\n" + sql);
+            }
+
+            var rowsAffteced = _connection.Execute(sb.ToString());
+
+            return rowsAffteced > 0;
         }
     }
 }
