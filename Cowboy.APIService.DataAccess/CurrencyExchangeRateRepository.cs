@@ -66,7 +66,9 @@ namespace Cowboy.APIService.DataAccess
                     EndDate = toDate,
                     ExchangeRates = x.ToList().GroupBy(g => new { g.RecordedOn })
                                               .ToDictionary(v => v.Key.RecordedOn,
-                                                            v => v.ToDictionary(d => d.TargetCurrencyCode, d => d.TargetCurrencyExchangeRate))
+                                                            v => v.GroupBy(z=> z.TargetCurrencyCode)
+                                                                  .Select(t => t.OrderByDescending(r => r.RecordedOn).FirstOrDefault())
+                                                                  .ToDictionary(d => d.TargetCurrencyCode, d => d.TargetCurrencyExchangeRate))
                 }).FirstOrDefault();
 
             return result;
