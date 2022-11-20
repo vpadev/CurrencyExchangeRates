@@ -23,6 +23,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IApiRepository, ApiRepository>();
 builder.Services.AddScoped<ICurrencyExchangeRateRepository, CurrencyExchangeRateRepository>();
 
+builder.Services.AddCors(o => o.AddPolicy("NUXT", builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+}));
 
 var app = builder.Build();
 
@@ -38,6 +44,8 @@ if (app.Environment.IsDevelopment())
     app.UseHsts();
 
 }
+app.UseCors("NUXT");
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

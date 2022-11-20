@@ -1,0 +1,145 @@
+<html>
+<head>
+    <title> Person Information </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        form {
+            border: 3px solid #f1f1f1;
+        }
+
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #04AA6D;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+            button:hover {
+                opacity: 0.8;
+            }
+
+        .cancelbtn {
+            width: auto;
+            padding: 10px 18px;
+            background-color: #f44336;
+        }
+
+        .imgcontainer {
+            text-align: center;
+            margin: 24px 0 12px 0;
+        }
+
+        img.avatar {
+            width: 40%;
+            border-radius: 50%;
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        span.psw {
+            float: right;
+            padding-top: 16px;
+        }
+
+        /* Change styles for span and cancel button on extra small screens */
+        @media screen and (max-width: 300px) {
+            span.psw {
+                display: block;
+                float: none;
+            }
+
+            .cancelbtn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        var baseurl = "https://localhost:7043/api";
+        function loadExchangeRates() {
+            var xmlhttp = new XMLHttpRequest();
+            var scode = document.getElementById('scode').value;
+            var amount = document.getElementById('amount').value;
+            var date = document.getElementById('date').value;
+            var tcode = "";
+            var select = document.getElementById("tcode");
+            for (var i = 0; i < select.length; i++) {
+                if (select[i].selected) {
+                    tcode = tcode + select[i].value + ",";
+                }
+            }
+            tcode = tcode.slice(0, -1);
+            var apiUrl = baseurl + "/rates/" + scode + "/" + tcode + "/" + amount + "";
+            if (date) {
+                apiUrl = apiUrl + "?date=" + date;
+            }
+            xmlhttp.open("GET", apiUrl, true);
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                    var rates = JSON.parse(xmlhttp.responseText);
+                    var tbltop = "<table><tr><th>Currency</th><th>ExchangeRate</th></tr>";
+                    //main table content we fill from data from the rest call
+                    var main = "";
+                    Object.entries(rates.exchangeRates).forEach(function ([curr, exRate]) {
+                        main += "<tr><td>" + curr + "</td><td>" + exRate + "</td></tr>";
+                    });
+
+                    var tblbottom = "</table>";
+                    var tbl = tbltop + main + tblbottom;
+                    document.getElementById("personinfo").innerHTML = tbl;
+                }
+            };
+            xmlhttp.send();
+        }
+    </script>
+</head>
+<body>
+    <h2>Currency Exchange Rates</h2>
+    <div class="container">
+        <label for="scode">Base Currency</label>
+        <select name="scode" id="scode">
+            <option value="USD">USD</option>
+            <option value="INR">INR</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+        </select>
+        <br />
+        <label for="tcode">Target Currency</label>
+        <select name="tcode" id="tcode" multiple>
+            <option value="USD">USD</option>
+            <option value="INR">INR</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+        </select>
+        <br />
+        <label for="amount">Amount</label>
+        <input name="amount" id="amount" />
+
+        <br />
+        <label for="date">date</label>
+        <input type="date" name="date" id="date" />
+        <br />
+        <br />
+        <button type="submit" onclick="loadExchangeRates()">Send Request</button>
+    </div>
+    <div id="personinfo"> </div>
+</body>
+</html>
