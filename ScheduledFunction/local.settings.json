@@ -1,0 +1,8 @@
+{
+    "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=none",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "FileName": "D:\\Works\\SARATH\\Norway 2\\CowboyProject-master\\Cowboy.ConsoleApp\\bin\\Debug\\net6.0\\Cowboy.ConsoleApp.exe"
+  }
+}
